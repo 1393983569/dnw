@@ -1,0 +1,50 @@
+.w_image_list_item img{
+  display: block;
+  width: 100%;
+}
+.w_image_list_item{
+  width: 160px;
+  margin-top: 20px;
+  margin-right: 20px;
+  overflow: hidden;
+  border: 1px solid #e7e7e7;
+  float: left;
+  padding: 5px;
+  border-radius: 3px;
+}
+.w_image_list_item:hover{
+  box-shadow: 0px 6px 18px 0px #d8d7d7;
+}
+.w_image_list_item .image_name{
+  display: inline-block;
+  width: 100px;
+  -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: top;
+}
+.w_image_list_item .image_con{
+  height: 160px;
+  overflow: hidden;
+  border-radius: 3px;
+  margin-bottom: 10px;
+  background: #f7f7f7;
+}
+.w_image_list_item .ivu-checkbox-wrapper{
+  font-size: 14px;
+}
+.tab_list_con_light{
+  background: #fff;
+  padding:10px 20px 20px 20px;
+  border-radius: 3px;
+}
+.tab_list_con_light .ivu-tabs-bar{
+  margin-bottom: 0
+}
+.clear{
+  clear: both;
+}
+.w_page_con{
+  padding-top: 20px;
+}

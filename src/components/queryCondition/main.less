@@ -1,0 +1,41 @@
+@bgColor: #edf7f9;
+
+.wrap-div{
+  //background-color: @bgColor;
+  width: 100%;
+  border-bottom: 1px dashed #bbc0cb;
+  box-sizing: border-box;
+  padding: 5px 12px;
+  .main-left{
+    display: inline-block;
+    height: 32px;
+    line-height: 32px;
+  }
+  .main-right{
+    .main-left;
+  }
+  &:nth-last-child(1){
+    border-bottom: none;
+  }
+}
+
+.arrows{
+  transition-timing-function: ease;
+  transition-duration: 1s;
+}
+
+.showClass{
+  box-sizing: border-box;
+  margin: 10px 0;
+  border-radius: 8px;
+  transition-timing-function: ease;
+  transition-duration: 1s;
+  overflow: hidden;
+}
+
+.icon-delete{
+  background-color: #f2f2f2;
+  border-radius: 7px;
+  border: 1px solid #bababa;
+  cursor: pointer;
+}
