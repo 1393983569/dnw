@@ -115,12 +115,13 @@ export default ({
     // 结算统计
     getList () {
       getSummary(this.accountStart, this.accountEnd).then(res => {
+        console.log(res,'res')
         this.cashMoney = res.info[0].现金 / 100
         this.wechatMoney = res.info[1].微信 / 100
         this.alipayMoney = res.info[2].支付宝 / 100
         this.posMoney = res.info[3].POS / 100
         this.appMoney = res.info[4].APP / 100
-        this.refundMoney = res.info[5].outPrice / 100
+        this.refundMoney = res.info[5].allRefund / 100
         this.totalMoney = res.info[5].price
         this.upperMoney = res.info[5].priceUpper
         this.cashier = res.info[5].name

@@ -4,7 +4,7 @@
         <query-condition @sendDataList="getSelectList" :showState="stateObj"></query-condition>
         <editableTables :columns='columns' :pageTotal='pageTotal' v-model="dataList" :selectOption='selectOption' @filtrateClick='filtrateClick' @getPage='getPageNum'>
           <div style="margin-left: 10px;display: inline-block;">
-            <addMessage @clickOk='addAdminDate' @accomplish='accomplish' :stateEcho='false'></addMessage>
+            <messageAdd @clickOk='addAdminDate' @accomplish='accomplish' :stateEcho='false'></messageAdd>
           </div>
           <div style="display: inline-block;">
             <Button @click='getExport'>导出</Button>
@@ -33,7 +33,7 @@
 </template>
 <script>
 import editableTables from '_c/editableTables/editableTables.vue'
-import addMessage from './components/messageAdd.vue'
+import messageAdd from './components/messageAdd.vue'
 import { getPageCusSelect, appointCus, appointDelCus, cusExport, exportParam } from '@/api/makeAnAppointment/InformationEditing/InformationEditing'
 import { addCusPrestore, getPageConsult, getPageCusFrom } from '@/api/cuManagement/InformationEditing/InformationEditing'
 import {getObjName} from '@/libs/util'
@@ -42,7 +42,7 @@ import queryCondition from '_c/queryCondition'
 export default({
   components: {
     editableTables,
-    addMessage,
+    messageAdd,
     advancesReceived,
     queryCondition
   },
@@ -97,7 +97,7 @@ export default({
           render: (h, params) => {
             let showAdd = false
             return h('div', [
-              h(addMessage, {
+              h(messageAdd, {
                 props: {
                   type: 'primary',
                   size: 'small',
