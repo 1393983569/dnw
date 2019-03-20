@@ -1,11 +1,11 @@
 <template>
+  <div>
     <div>
-      <div>
-        <editableTables :columns='columns' :pageTotal='pageTotal' v-model="dataList" :selectOption='selectOption' @filtrateClick='filtrateClick' @getPage='getPageNum'>
-          <div style="margin-left: 10px;display: inline-block;">
-            <addMessage @clickOk='addAdminDate' @accomplish='accomplish' :stateEcho='false'></addMessage>
-          </div>
-          <div style="display: inline-block;">
+      <editableTables :columns='columns' :pageTotal='pageTotal' v-model="dataList" :selectOption='selectOption' @filtrateClick='filtrateClick' @getPage='getPageNum'>
+        <div style="margin-left: 10px;display: inline-block;">
+          <addMessage @clickOk='addAdminDate' @accomplish='accomplish' :stateEcho='false'></addMessage>
+        </div>
+        <div style="display: inline-block;">
       <Button @click='getExport'>导出</Button>
     </div>
   </editableTables>
@@ -35,11 +35,17 @@
   </div>
 </template>
 <script>
-import editableTables from '_c/editableTables/editableTables.vue'
-import addMessage from './components/messageAdd.vue'
+import editableTables from '_c/editableTables/editableTables'
+import dynamicConditionFrom from '_c/dynamicConditionFrom/dynamicConditionFrom'
+import addMessage from './components/messageAdd'
 import { getPageCus, appointCus, appointDelCus, cusExport, exportParam, getAllCus, editCus, getAdminsInfo, getCustomer, getPageConsult } from '@/api/makeAnAppointment/InformationEditing/InformationEditing'
 import {getObjName} from '@/libs/util'
 export default({
+  components: {
+    editableTables,
+    addMessage,
+    dynamicConditionFrom
+  },
   data () {
     return {
       columns: [
@@ -334,10 +340,6 @@ export default({
         this.$Message.error(err)
       })
     }
-  },
-  components: {
-    editableTables,
-    addMessage
   },
   mounted () {
     // 初始化管理员列表

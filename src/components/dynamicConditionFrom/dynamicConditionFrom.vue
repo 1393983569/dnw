@@ -18,6 +18,21 @@
             { required: true, message: 'The name cannot be empty', trigger: 'blur' }
           ]
         },
+        // 日期选择器
+        {
+          // 类型
+          type: 'DatePicker',
+          // 初始值
+          value: '',
+          // 字段值
+          name: 'name',
+          // 标题
+          label: '姓名',
+          // 验证规则
+          rule: [
+            { required: true, message: 'The name cannot be empty', trigger: 'blur' }
+          ]
+        },
         {
           // 下拉选择
           type: 'i-select',
