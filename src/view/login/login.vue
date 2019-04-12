@@ -6,7 +6,7 @@
       <div class="login-con">
         <Card icon="log-in" title="欢迎登录" :bordered="false">
           <div class="form-con">
-            <login-form @on-success-valid="handleSubmit"></login-form>
+            <login-form ref="loginFormForm" @on-success-valid="handleSubmit"></login-form>
             <p class="login-tip">请输入户名和密码</p>
           </div>
         </Card>
@@ -29,12 +29,14 @@ export default {
       this.handleLogin({ userName, password }).then(res => {
         this.getUserInfo().then(res => {
           this.$Message.success(res.accountInfo + '欢迎登陆')
+          this.$refs.loginFormForm.cancelLogin()
           this.$router.push({
             name: 'home'
           })
         })
       }).catch(err => {
         this.$Message.error(err)
+        this.$refs.loginFormForm.cancelLogin()
       })
     }
   },

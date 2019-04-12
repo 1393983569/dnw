@@ -118,7 +118,7 @@ export default [
         meta: {
           access: ['gukexinxi_g'],
           icon: '_iconset0203',
-          title: '顾客信息'
+          title: '线上顾客管理'
         },
         component: () => import('@/view/makeAnAppointment/InformationEditing/InformationEditing.vue')
       },
@@ -150,7 +150,7 @@ export default [
         meta: {
           access: ['gukexinxi'],
           icon: '_xiangqing1',
-          title: '顾客信息'
+          title: '门店顾客管理'
         },
         component: () => import('@/view/cuManagement/InformationEditing/InformationEditing.vue')
       }
@@ -491,6 +491,60 @@ export default [
           title: '下单'
         },
         component: () => import('@/view/inventoryManagement/placeAnOrder.vue')
+      }
+    ]
+  },
+  {
+    path: '/logManagement',
+    name: 'logManagement',
+    meta: {
+      // access: ['rizhi'],
+      icon: '_cangku',
+      title: '日志管理'
+    },
+    component: Main,
+    children: [
+      {
+        path: 'log',
+        name: 'log',
+        meta: {
+          // access: ['log'],
+          icon: '_cangku_zhongzhuanchuzhan_o',
+          title: '日志'
+        },
+        component: () => import('@/view/logManagement/log.vue')
+      }
+    ]
+  },
+  {
+    path: '/statisticsManagement',
+    name: 'statisticsManagement',
+    meta: {
+      // access: ['rizhi'],
+      icon: '_cangku',
+      title: '统计'
+    },
+    component: Main,
+    children: [
+      {
+        path: 'statistics',
+        name: 'statistics',
+        meta: {
+          // access: ['log'],
+          icon: '_cangku_zhongzhuanchuzhan_o',
+          title: '统计'
+        },
+        component: () => import('@/view/statisticsManagement/statistics.vue')
+      },
+      {
+        path: 'operationsStatement',
+        name: 'operationsStatement',
+        meta: {
+          // access: ['log'],
+          icon: '_cangku_zhongzhuanchuzhan_o',
+          title: '经营报表'
+        },
+        component: () => import('@/view/statisticsManagement/operationsStatement.vue')
       }
     ]
   },

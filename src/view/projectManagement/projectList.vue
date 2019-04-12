@@ -1,7 +1,13 @@
 <template>
   <div>
     <query-condition  @sendDataList="getSelectList" style="display: inline-block; vertical-align: top;" :showState="stateObj">
-      <Button type="primary" style="display: inline-block" @click="showAddModel">添加项目</Button>
+    <div style="margin-top: 5px">
+      <Button type="primary" style="display: inline-block;  vertical-align: top" @click="showAddModel">添加项目</Button>
+      <Button type="primary"  @click="downloadTemplate" style="margin-bottom: 10px; vertical-align: top" :loading="loading_log">下载导入模板</Button>
+      <Upload :on-success="onUploadSuccess" :show-upload-list="false" style="display: inline-block; vertical-align: top" :action="`//${$config.baseUrl.pro.split('//')[1]}/importTsProject`">
+        <Button icon="ios-cloud-upload-outline">导入</Button>
+      </Upload>
+    </div>
     </query-condition>
     <Input v-model="keyWords" style="width: 300px;">
       <Select v-model="catId" @on-clear="clickEmpty" clearable slot="prepend" @on-change="onChange" style="width:80px">
@@ -241,7 +247,8 @@ import {
   modifyProject,
   getProDetail,
   modifyProStatus,
-  getAllProList
+  getAllProList,
+  downloadTemplateOfProject
 } from '@/api/projectManagement/projectManagement'
 import {
   getUnitList
@@ -337,13 +344,15 @@ export default {
         {
           title: '操作',
           key: 'operate',
-          align: 'center',
           render: (h, params) => {
             return h('div', [
               h('Button', {
                 props: {
                   type: 'primary',
                   size: 'small'
+                },
+                style: {
+                  display: 'inline-block'
                 },
                 on: {
                   click: () => {
@@ -357,7 +366,8 @@ export default {
                   size: 'small'
                 },
                 style: {
-                  'marginLeft': '5px'
+                  'marginLeft': '5px',
+                  display: 'inline-block'
                 },
                 on: {
                   click: () => {
@@ -371,7 +381,8 @@ export default {
                   size: 'small'
                 },
                 style: {
-                  'marginLeft': '5px'
+                  'marginLeft': '5px',
+                  display: 'inline-block'
                 },
                 on: {
                   click: () => {
@@ -445,7 +456,8 @@ export default {
       addLoading: false,
       editLoading: false,
       col_name: 'test',
-      selecList: []
+      selecList: [],
+      loading_log: false
     }
   },
   methods: {
@@ -682,6 +694,20 @@ export default {
         if (e.id === Number.parseInt(item.gUnit)) { x = e.unityname }
       })
       return x
+    },
+    async downloadTemplate () {
+      this.loading_log = true
+      try {
+        let resData = await downloadTemplateOfProject()
+        this.loading_log = false
+        window.location.href = resData.info
+      } catch (e) {
+        this.$Message.error(e)
+      }
+    },
+    onUploadSuccess () {
+      this.$Message.success('成功')
+      this.getData(this.pageNum, this.keyWords, this.catId)
     }
   },
   mounted () {

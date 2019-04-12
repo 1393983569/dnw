@@ -22,7 +22,8 @@
 <script>
 import editableTables from '_c/editableTables/editableTables.vue'
 import addMessage from './components/addMessage.vue'
-import { addAdmin, getAdmins, getListShop, changeAdminShop, changePassword } from '@/api/userManagement/message'
+import { addAdmin, getAdmins, getListShop, changeAdminShop, changePassword, changeAdminState } from '@/api/userManagement/message'
+import { updateAdmin, getRolesAlreadyHave } from '@/api/userManagement/role'
 export default({
   data () {
     return {
@@ -42,6 +43,36 @@ export default({
         {
           title: '电话',
           key: 'accountPhone'
+        },
+        {
+          title: '权限',
+          key: 'roleId',
+          render: (h, param) => {
+            return h('div', [
+              h('Select', {
+                props: {
+                  value: this.dataList[param.index].roleId + ''
+                },
+                on: {
+                  'on-change': (e) => {
+                    updateAdmin(param.row.id, e).then(res => {
+                      this.$Message.success(res.info)
+                      this.dataList[param.index].roleId = e + ''
+                    }).catch(err => {
+                      this.$Message.error(err)
+                    })
+                  }
+                }
+              }, this.roleList.map(item => {
+                return h('Option', {
+                  props: {
+                    value: item.key + '',
+                    label: item.label + ''
+                  }
+                })
+              }))
+            ])
+          }
         },
         {
           title: '所在店铺',
@@ -80,7 +111,7 @@ export default({
         {
           title: '操作',
           key: 'action',
-          width: 150,
+          width: 200,
           align: 'center',
           render: (h, params) => {
             return h('div', [
@@ -99,7 +130,33 @@ export default({
                     this.modalState = true
                   }
                 }
-              }, '修改密码')
+              }, '修改密码'),
+              h('Button', {
+                props: {
+                  type: 'error',
+                  size: 'small'
+                },
+                style: {
+                  marginLeft: '5px'
+                },
+                on: {
+                  click: () => {
+                    this.$Modal.confirm({
+                      title: '提示',
+                      content: '确定删除吗？',
+                      onOk: () => {
+                        changeAdminState(params.row.id)
+                          .then(res => {
+                            this.getList()
+                          })
+                          .catch(e => {
+                            this.$Message.error(e)
+                          })
+                      }
+                    })
+                  }
+                }
+              }, '删除')
             ])
           }
         }
@@ -125,7 +182,8 @@ export default({
       modalState: false,
       password: '',
       daminId: '',
-      modalPassword: true
+      modalPassword: true,
+      roleList: []
     }
   },
   methods: {
@@ -173,6 +231,7 @@ export default({
           data.accountPhone = item.sysAccountInfoPojo.accountPhone
           data.shopId = item.sysAccountInfoPojo.shopId
           data.accountId = item.sysAccountInfoPojo.accountId
+          data.roleId = item.sysAccountInfoPojo.roleId + ''
           data.id = item.id
           this.dataList.push(data)
         })
@@ -219,6 +278,24 @@ export default({
         this.$Message.error(err)
         this.modalPassword = false
       })
+    },
+    // 获得全部权限
+    getTlist () {
+      let self = this
+      let mockData = []
+      self.roleList = []
+      getRolesAlreadyHave().then(res => {
+        for (let i = 0; res.info.length > i; i++) {
+          mockData.push({
+            key: res.info[i].id + '',
+            label: res.info[i].roleTitle + ''
+          })
+        }
+        self.roleList = mockData
+        console.log(self.roleList, 'ssssssssssssssss')
+      }).catch(err => {
+        console.log(err)
+      })
     }
   },
   components: {
@@ -229,6 +306,7 @@ export default({
     // 初始化管理员列表
     this.getList()
     this.getShopName()
+    this.getTlist()
   }
 })
 </script>

@@ -121,29 +121,29 @@ export default({
                   }
                 }
               }),
-              h('Button', {
-                props: {
-                  type: 'primary',
-                  size: 'small'
-                },
-                style: {
-                  display: this.$store.state.user.access.indexOf('admin') !== -1 ? 'none' : 'inline-block'
-                },
-                on: {
-                  click: () => {
-                    this.userIds = params.row.id
-                    this.modalbeautyConsultant = true
-                    Promise.all([getAdminsInfo(), getCustomer(this.userIds)]).then(res => {
-                      this.beautyConsultantValue = res[1].info.accountId
-                      res[0].info.map(item => {
-                        this.beautyConsultant.push(item)
-                      })
-                    }).catch(err => {
-                      console.log(err)
-                    })
-                  }
-                }
-              }, '分配美颜顾问')
+              // h('Button', {
+              //   props: {
+              //     type: 'primary',
+              //     size: 'small'
+              //   },
+              //   style: {
+              //     display: this.$store.state.user.access.indexOf('admin') !== -1 ? 'none' : 'inline-block'
+              //   },
+              //   on: {
+              //     click: () => {
+              //       this.userIds = params.row.id
+              //       this.modalbeautyConsultant = true
+              //       Promise.all([getAdminsInfo(), getCustomer(this.userIds)]).then(res => {
+              //         this.beautyConsultantValue = res[1].info.accountId
+              //         res[0].info.map(item => {
+              //           this.beautyConsultant.push(item)
+              //         })
+              //       }).catch(err => {
+              //         console.log(err)
+              //       })
+              //     }
+              //   }
+              // }, '分配美颜顾问')
             ])
           }
         }

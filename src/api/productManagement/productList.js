@@ -18,3 +18,13 @@ export const getListSupplier = () => {
     method: 'post'
   })
 }
+
+/**
+ * 下载导入产品的模板
+ */
+export const downloadTemplateOfGoods = () => {
+  return axios.request({
+    url: 'downloadTemplateOfGoods',
+    method: 'post'
+  })
+}

@@ -16,7 +16,7 @@
         <slot></slot>
       </div>
     </div>
-    <Table ref="selection" stripe :columns="processingLolumns" :data="value" @on-selection-change="selectionChange" :loading="progress"></Table>
+    <Table :row-class-name="rowClassName" ref="selection" :stripe="stripe" :columns="processingLolumns" :data="value" @on-selection-change="selectionChange" :loading="progress"></Table>
     <slot name='statistics'></slot>
     <Page :total="pageTotal * 10" show-elevator @on-change='emitPage' @on-page-size-change='emitPage' style="margin-top: 20px" />
   </div>
@@ -68,6 +68,11 @@ export default ({
     selectSatae: {
       type: String,
       default: ''
+    },
+    rowClassName: Function,
+    stripe: {
+      type: Boolean,
+      default: true
     }
   },
   methods: {
@@ -85,12 +90,10 @@ export default ({
         this.editableId = `${column.key}_${index}`
       }
     },
-
     // 写入数据触发
     handleInput (newValue) {
       this.inputValue = newValue
     },
-
     // 可编辑数据初始化
     compileInit () {
       // 初始化表格
@@ -154,7 +157,15 @@ export default ({
     },
     selectionChange (selection) {
       this.$emit('selectionChange', selection)
-    }
+    },
+    // 判断颜色
+    // rowClassName: (row) => {
+    //   if (row.isShop + '' === '1') {
+    //     return 'demo-table-info-row'
+    //   } else {
+    //     return 'demo-table-info-row'
+    //   }
+    // }
   },
   mounted () {
     // 初始化编辑
@@ -171,4 +182,8 @@ export default ({
 })
 </script>
 <style>
+  .ivu-table .demo-table-info-row td {
+    background-color: #d3492d;
+    color: #ffffff;
+  }
 </style>

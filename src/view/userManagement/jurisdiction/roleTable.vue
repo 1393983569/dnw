@@ -1,6 +1,6 @@
 <template>
     <div>
-      <div v-if="showEditableTables">
+      <div>
         <editableTables :selectShow='false' :columns='columns' :pageTotal='pageTotal' v-model="dataList" @getPage='getPageNum'>
           <div style="margin-left: 10px;">
             <addMessage @addClick='addRoleDate'></addMessage>
@@ -144,12 +144,12 @@ export default({
       alreadyHaveMounted: []
     }
   },
-  props: {
-    showTable: {
-      type: Boolean,
-      default: true
-    }
-  },
+  // props: {
+  //   showTable: {
+  //     type: Boolean,
+  //     default: true
+  //   }
+  // },
   methods: {
     ...mapActions([
       'getUserInfo'
@@ -292,22 +292,22 @@ export default({
   },
   mounted () {
     // 初始化管理员列表
-    if (this.showTable) {
+    // if (this.showTable) {
       this.getList()
       // 预先得到所有权限
       this.getTlist()
-    }
+    // }
   },
-  watch: {
-    'showTable' (e) {
-      this.showEditableTables = e
-      if (e) {
-        this.getList()
-        // 预先得到所有权限
-        this.getTlist()
-      }
-    }
-  }
+  // watch: {
+  //   'showTable' (e) {
+  //     this.showEditableTables = e
+  //     if (e) {
+  //       this.getList()
+  //       // 预先得到所有权限
+  //       this.getTlist()
+  //     }
+  //   }
+  // }
 })
 </script>
 <style>

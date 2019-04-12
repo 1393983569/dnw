@@ -224,6 +224,7 @@ export default({
     },
     // 监听选择事件
     onChangeSelect (e) {
+      console.log(e)
       this.dataListCus = e
     },
     // 点击取消
@@ -234,21 +235,22 @@ export default({
     okCus () {
       this.loading = true
       let state = true
+      console.log(this.dataListCus)
       if (this.dataListCus.length === 0) {
         this.loading = false
         this.$Message.error('请选择美颜师')
         return
       }
-      this.dataListCus.map(item => {
-        if (item.creator === '') {
-          state = false
-        }
-      })
-      if (!state) {
-        this.loading = false
-        this.$Message.error('请选择美颜师')
-        return
-      }
+      // this.dataListCus.map(item => {
+      //   if (item.creator === '' || item.creator) {
+      //     state = false
+      //   }
+      // })
+      // if (!state) {
+      //   this.loading = false
+      //   this.$Message.error('请选择美颜师')
+      //   return
+      // }
       addCreatorToStep(this.dataListCus).then(res => {
         this.loading = false
         this.modal = false

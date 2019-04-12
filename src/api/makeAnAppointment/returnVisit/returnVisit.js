@@ -68,12 +68,16 @@ export const updateCusVisit = (id, result) => {
  * @param {String} id 顾客id
  * @param {String} accountId 管理员id
  */
-export const updateCustomer = (id, accountId) => {
+export const updateCustomer = (accountId, startTime, endTime, isShop, cusName, cusPhone1) => {
   let params = new URLSearchParams()
-  params.append('id', id)
   params.append('accountId', accountId)
+  if (startTime) params.append('startTime', startTime)
+  if (endTime) params.append('endTime', endTime)
+  if (isShop) params.append('isShop', isShop)
+  if (cusName) params.append('cusName', cusName)
+  if (cusPhone1) params.append('cusPhone1', cusPhone1)
   return axios.request({
-    url: 'updateCustomer',
+    url: 'customerMove',
     data: params,
     method: 'post'
   })
@@ -99,6 +103,29 @@ export const getPageCus2 = (pageNum, cusName, cusPhone1, vTime, allState) => {
   params.append('pageNum', pageNum)
   return axios.request({
     url: api,
+    data: params,
+    method: 'post'
+  })
+}
+
+/**
+ *  分页获取用户信息 顾客转移专用
+ * @param {String} pageNum 页码
+ * @param {String} cusName 名字
+ * @param {String} cusPhone1 电话
+ */
+export const getPageCusTransfer = (pageNum, cusName, cusPhone1, vTime, startTime, endTime, isShop) => {
+  let api = ''
+  let params = new URLSearchParams()
+  if (cusName) params.append('cusName', cusName)
+  if (cusPhone1) params.append('cusPhone1', cusPhone1)
+  if (startTime) params.append('startTime', startTime)
+  if (endTime) params.append('endTime', endTime)
+  if (isShop) params.append('isShop', isShop)
+  if (vTime) params.append('vTime', 1)
+  params.append('pageNum', pageNum)
+  return axios.request({
+    url: 'getPageCus2',
     data: params,
     method: 'post'
   })

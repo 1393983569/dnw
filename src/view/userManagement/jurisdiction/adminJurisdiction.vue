@@ -1,15 +1,14 @@
 <template>
     <div>
-      <div v-if="true">
-        <editableTables :selectOption='selectOption' :columns='columns' :pageTotal='pageTotal' v-model="dataList" @filtrateClick='filtrateClick'  @getPage='getPageNum'>
-          <div style="margin-left: 10px;">
-            <Button @click="showDrawer" type="primary">角色权限管理</Button>
-            <Drawer title="角色权限" @on-close='closeDrawer' width="720" :closable="false" v-model="valueDrawer">
-              <roleAdmin :showTable='valueDrawer'></roleAdmin>
-            </Drawer>
-          </div>
-        </editableTables>
-      </div>
+        <roleAdmin></roleAdmin>
+        <!--<editableTables :selectOption='selectOption' :columns='columns' :pageTotal='pageTotal' v-model="dataList" @filtrateClick='filtrateClick'  @getPage='getPageNum'>-->
+          <!--<div style="margin-left: 10px;">-->
+            <!--<Button @click="showDrawer" type="primary">角色权限管理</Button>-->
+            <!--<Drawer title="角色权限" @on-close='closeDrawer' width="720" :closable="false" v-model="valueDrawer">-->
+              <!--<roleAdmin :showTable='valueDrawer'></roleAdmin>-->
+            <!--</Drawer>-->
+          <!--</div>-->
+        <!--</editableTables>-->
     </div>
 </template>
 <script>
@@ -23,110 +22,110 @@ import roleAdmin from './roleTable'
 export default({
   data () {
     return {
-      columns: [
-        {
-          title: '职务',
-          key: 'accountJob'
-        },
-        {
-          title: '姓名',
-          key: 'accountName'
-        },
-        {
-          title: '电话',
-          key: 'accountPhone'
-        },
-        {
-          title: '职位',
-          key: 'roleId',
-          width: 250,
-          render: (h, param) => {
-            return h('div', [
-              h('Select', {
-                props: {
-                  value: this.dataList[param.index].roleId + ''
-                },
-                style: {
-                  'white': 60
-                },
-                on: {
-                  'on-change': (e) => {
-                    updateAdmin(e, param.row.id).then(res => {
-                      this.$Message.success(res.info)
-                      this.dataList[param.index].roleId = e + ''
-                    }).catch(err => {
-                      this.$Message.error(err)
-                    })
-                  }
-                }
-              }, this.roleList.map(item => {
-                return h('Option', {
-                  props: {
-                    value: item.key + '',
-                    label: item.label + ''
-                  }
-                })
-              }))
-            ])
-          }
-        },
-        {
-          title: '操作',
-          key: 'action',
-          width: 250,
-          align: 'center',
-          render: (h, params) => {
-            return h('div', [
-              // 穿梭框组件
-              //                  h(roleTransfer, {
-              //                      props: {
-              //                        targetKeys: this.targetKeys,
-              //                        roleList: this.roleList
-              //                      },
-              //                      style: {
-              //                          marginRight: '5px',
-              //                          display: 'inline-block'
-              //                      },
-              //                      on: {
-              //                          clickOn: () => {
-              //                            this.showTransfer = !this.showTransfer
-              //                            this.getMockKey(params.row.id)
-              //                            this.getTlist ()
-              //                          },
-              //                          newTargetKeys: (e) => {
-              //                            this.targetKeys = e
-              //                          },
-              //                          // 提交修改的权限
-              //                          clickSubmit: () => {
-              //                            updateAdmin(params.row.id, this.targetKeys).then(res => {
-              //                              this.$Message.success(res.info)
-              //                              this.getMockKey(params.row.id)
-              //                            }).catch(err => {
-              //                                this.$Message.error(err)
-              //                            })
-              //                          }
-              //                      }
-              //                  }, '权限'),
-              h('Button', {
-                props: {
-                  type: 'error',
-                  size: 'small'
-                },
-                on: {
-                  click: () => {
-                    changeAdminState(params.row.id).then(res => {
-                      this.$Message.success(res.info)
-                      this.getList()
-                    }).catch(err => {
-                      this.$Message.error(err)
-                    })
-                  }
-                }
-              }, '删除')
-            ])
-          }
-        }
-      ],
+      // columns: [
+      //   {
+      //     title: '职务',
+      //     key: 'accountJob'
+      //   },
+      //   {
+      //     title: '姓名',
+      //     key: 'accountName'
+      //   },
+      //   {
+      //     title: '电话',
+      //     key: 'accountPhone'
+      //   },
+      //   {
+      //     title: '职位',
+      //     key: 'roleId',
+      //     width: 250,
+      //     render: (h, param) => {
+      //       return h('div', [
+      //         h('Select', {
+      //           props: {
+      //             value: this.dataList[param.index].roleId + ''
+      //           },
+      //           style: {
+      //             'white': 60
+      //           },
+      //           on: {
+      //             'on-change': (e) => {
+      //               updateAdmin(e, param.row.id).then(res => {
+      //                 this.$Message.success(res.info)
+      //                 this.dataList[param.index].roleId = e + ''
+      //               }).catch(err => {
+      //                 this.$Message.error(err)
+      //               })
+      //             }
+      //           }
+      //         }, this.roleList.map(item => {
+      //           return h('Option', {
+      //             props: {
+      //               value: item.key + '',
+      //               label: item.label + ''
+      //             }
+      //           })
+      //         }))
+      //       ])
+      //     }
+      //   },
+      //   {
+      //     title: '操作',
+      //     key: 'action',
+      //     width: 250,
+      //     align: 'center',
+      //     render: (h, params) => {
+      //       return h('div', [
+      //         // 穿梭框组件
+      //         //                  h(roleTransfer, {
+      //         //                      props: {
+      //         //                        targetKeys: this.targetKeys,
+      //         //                        roleList: this.roleList
+      //         //                      },
+      //         //                      style: {
+      //         //                          marginRight: '5px',
+      //         //                          display: 'inline-block'
+      //         //                      },
+      //         //                      on: {
+      //         //                          clickOn: () => {
+      //         //                            this.showTransfer = !this.showTransfer
+      //         //                            this.getMockKey(params.row.id)
+      //         //                            this.getTlist ()
+      //         //                          },
+      //         //                          newTargetKeys: (e) => {
+      //         //                            this.targetKeys = e
+      //         //                          },
+      //         //                          // 提交修改的权限
+      //         //                          clickSubmit: () => {
+      //         //                            updateAdmin(params.row.id, this.targetKeys).then(res => {
+      //         //                              this.$Message.success(res.info)
+      //         //                              this.getMockKey(params.row.id)
+      //         //                            }).catch(err => {
+      //         //                                this.$Message.error(err)
+      //         //                            })
+      //         //                          }
+      //         //                      }
+      //         //                  }, '权限'),
+      //         h('Button', {
+      //           props: {
+      //             type: 'error',
+      //             size: 'small'
+      //           },
+      //           on: {
+      //             click: () => {
+      //               changeAdminState(params.row.id).then(res => {
+      //                 this.$Message.success(res.info)
+      //                 this.getList()
+      //               }).catch(err => {
+      //                 this.$Message.error(err)
+      //               })
+      //             }
+      //           }
+      //         }, '删除')
+      //       ])
+      //     }
+      //   }
+      // ],
       selectOption: [
         {
           label: '姓名',
@@ -143,7 +142,7 @@ export default({
       roleList: [],
       targetKeys: [],
       showTransfer: false,
-      valueDrawer: false,
+      valueDrawer: true,
       showTable: true,
       accountTitle: ''
     }

@@ -95,8 +95,11 @@ export const changeAdminShop = (accountId, shopId) => {
  * 查询咨询
  */
 export const getZiXunOfShop = () => {
+  // let params = new URLSearchParams()
+  // params.append('accountType', 1)
   return axios.request({
-    url: 'getZiXunOfShop',
+    url: 'getAdminsInfo',
+    // data: params,
     method: 'post'
   })
 }

@@ -14,6 +14,10 @@
         <span>已做次数：<span style="color: #69bd38">{{ haveFinished }}</span></span>
       </div>
       <Button type="info" size="small" @click="buttonClick">划卡详情</Button>
+      <span>美容师：</span>
+      <Select v-model="creator" v-show="this.dataList.length" style="width:200px" @on-change="modalStampTheCard">
+        <Option v-for="(item, index) in adminList" :value="item.accountId + ''" :key="index">{{ item.accountTitle }}</Option>
+      </Select>
       <div style="margin-top: 10px">
         <Table stripe :columns="columns" :data="dataList"></Table>
       </div>
@@ -22,7 +26,7 @@
         v-model="modalDetails"
         width="850"
         title="划卡详情">
-          <cardDetails :idObj="cardDetailsId"></cardDetails>
+        <cardDetails :idObj="cardDetailsId"></cardDetails>
       </Modal>
     </div>
 </template>
@@ -38,44 +42,37 @@ export default ({
           title: '序号',
           key: 'index'
         },
-        //        {
-        //          title: '年龄',
-        //          key: 'age',
-        //          sortable: true,
-        //          sortMethod: (a, b, type) => type === 'asc' ? a.age > b.age : a.age < b.age
-        //        },
         {
           title: '项目步骤',
           key: 'content'
         },
-        {
-          title: '美容师',
-          key: 'creator',
-          width: 250,
-          align: 'center',
-          render: (h, params) => {
-            let showAdd = false
-            return h('div', [
-              h('Select', {
-                props: {
-                  value: this.dataList[params.index].creator
-                },
-                on: {
-                  'on-change': (e) => {
-                    this.dataList[params.index].creator = e
-                    this.$emit('onChange', this.dataList)
-                  }
-                }
-              }, this.adminList.map(item => {
-                return h('Option', {
-                  props: {
-                    value: item.accountId
-                  }
-                }, item.accountTitle)
-              }))
-            ])
-          }
-        }
+        // {
+        //   title: '美容师',
+        //   key: 'creator',
+        //   width: 250,
+        //   align: 'center',
+        //   render: (h, params) => {
+        //     return h('div', [
+        //       h('Select', {
+        //         props: {
+        //           value: this.dataList[params.index].creator + ''
+        //         },
+        //         on: {
+        //           'on-change': (e) => {
+        //             this.dataList[params.index].creator = e
+        //             this.$emit('onChange', this.dataList)
+        //           }
+        //         }
+        //       }, this.adminList.map(item => {
+        //         return h('Option', {
+        //           props: {
+        //             value: item.accountId + ''
+        //           }
+        //         }, item.accountTitle)
+        //       }))
+        //     ])
+        //   }
+        // }
       ],
       // 基本参数
       dataList: [],
@@ -90,7 +87,8 @@ export default ({
       haveFinished: 0,
       modalDetails: false,
       cardDetailsId: {},
-      logIdObj: ''
+      logIdObj: '',
+      creator: ''
     }
   },
   props: {
@@ -114,17 +112,26 @@ export default ({
         this.cardNumber = res.info.cardNumber
         this.tsProjectPojoCardNumber = res.info.tsProjectPojo.cardNumber
         this.haveFinished = parseInt(this.tsProjectPojoCardNumber) - parseInt(this.cardNumber)
-        res.info.tsProjectPojo.steps.map((item, index) => {
+        // 判断是否有步奏
+        if (res.info.tsProjectPojo.steps.length !== 0) {
+          res.info.tsProjectPojo.steps.map((item, index) => {
+            this.dataList.push({
+              index: index + 1,
+              cusId: res.info.cusId,
+              pId: res.info.id,
+              content: item.content,
+              type: 1
+            })
+          })
+        } else {
           this.dataList.push({
-            index: index + 1,
-            content: item.content,
-            creator: '',
-            stepId: item.sid,
-            cpId: projectId,
-            cusId: cusId,
+            index: 1,
+            cusId: res.info.cusId,
+            pId: res.info.id,
+            content: res.info.tsProjectPojo.title,
             type: 1
           })
-        })
+        }
       }).catch(err => {
         console.log(err)
       })
@@ -154,20 +161,32 @@ export default ({
         this.cardNumber = res.info.pNum
         this.tsProjectPojoCardNumber = res.info.tsProjectPojo.cardNumber
         this.haveFinished = parseInt(this.tsProjectPojoCardNumber) - parseInt(this.cardNumber)
-        res.info.tsProjectPojo.steps.map((item, index) => {
+        if (res.info.tsProjectPojo.steps.length !== 0) {
+          res.info.tsProjectPojo.steps.map((item, index) => {
+            this.dataList.push({
+              index: 1,
+              cusId: res.info.cusId,
+              pId: res.info.pId,
+              content: item.content,
+              creator: '',
+              csmId: csmId,
+              stepId: item.sid,
+              type: 2
+            })
+          })
+        } else {
           this.dataList.push({
-            index: index + 1,
-            content: item.content,
+            index: 1,
+            content: res.info.tsProjectPojo.title,
             creator: '',
-            csmId: res.info.csmId,
+            csmId: csmId,
             pId: res.info.pId,
             cusId: this.listId,
-            stepId: item.sid,
             type: 2
           })
-        })
-      }).catch(() => {
-        console.log('得到套餐项目步奏 异常')
+        }
+      }).catch((e) => {
+        console.log(e)
       })
     },
     // 选择项目
@@ -180,10 +199,11 @@ export default ({
     getAdminList () {
       this.adminList = []
       getAdminsInfo().then(res => {
+        console.log(res)
         res.info.map(item => {
           this.adminList.push({
-            accountTitle: item.accountTitle,
-            accountId: item.accountId
+            accountTitle: item.sysAccountInfoPojo.accountTitle,
+            accountId: item.sysAccountInfoPojo.accountId
           })
         })
       }).catch(err => {
@@ -199,6 +219,7 @@ export default ({
       this.cardNumber = 0
       this.tsProjectPojoCardNumber = 0
       this.haveFinished = 0
+      this.creator = ''
     },
     // 点击划卡详情按钮
     buttonClick () {
@@ -207,6 +228,14 @@ export default ({
         time: new Date(),
         idObj: this.logIdObj
       }
+    },
+    modalStampTheCard (e) {
+      console.log(this.dataList, '-----------------------')
+      console.log(e)
+      this.dataList.forEach(item => {
+        item.mrsId = e
+      })
+      this.$emit('onChange', this.dataList)
     }
   },
   components: {
@@ -223,9 +252,11 @@ export default ({
       // 复位
       this.restoration()
       this.state = e.state
+      // 项目
       if (this.state === 'P') {
         this.listId = e.id.projectId
         this.getProcedure(this.listId, e.id.cusId)
+        // 套餐
       } else {
         this.listId = e.csmId
         this.getProjectList(this.listId, e.pId)

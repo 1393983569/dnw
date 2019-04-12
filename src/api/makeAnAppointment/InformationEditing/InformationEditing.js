@@ -105,6 +105,7 @@ export const getCustomer = (id) => {
  * @param {String} id
  */
 export const updateCustomer = (data, id) => {
+  console.log(data, '=====================================')
   let params = new URLSearchParams()
   if (data.cusAge) params.append('cusAge', data.cusAge)
   if (data.cusName) params.append('cusName', data.cusName)
@@ -131,6 +132,7 @@ export const updateCustomer = (data, id) => {
   if (data.remark) params.append('remark', data.remark)
   if (data.rePic) params.append('rePic', data.rePic)
   if (data.isMessage) params.append('isMessage', data.isMessage)
+  if (data.isShop) params.append('isShop', data.isShop)
   if (data.appointTime) params.append('appointTime', data.appointTime)
   if (data.visitTime) params.append('visitTime', data.visitTime)
   params.append('id', id)

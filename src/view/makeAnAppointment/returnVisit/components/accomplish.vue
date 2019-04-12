@@ -3,18 +3,27 @@
       <div>
         <editableTables :columns='columns' :pageTotal='pageTotal' v-model="dataList" :selectOption='selectOption' @filtrateClick='filtrateClick' @getPage='getPageNum'>
           <div style="margin-left: 10px;">
+            <DatePicker type="daterange" v-model="selectDateValue" @on-change="changeDate" placement="bottom-end" placeholder="请选择日期" style="width: 200px"></DatePicker>
+            <RadioGroup v-model="disabledGroup" @on-change="changeRadioGroup">
+              <Radio label="1">已到</Radio>
+              <Radio label="0">未到</Radio>
+              <Radio label="">全部</Radio>
+            </RadioGroup>
             <Button type="primary" @click="nowButton">{{ buttonValue }}</Button>
+            <Button type="error" @click="clickCustomerTransfer">顾客一键转移</Button>
           </div>
         </editableTables>
       </div>
       <Modal
         v-model="modal"
-        title="顾客转移"
-        @on-ok="ok"
-        @on-cancel="cancel">
-        <Select v-model="modelAdmin" placeholder='请选择其他管理' style="width:200px">
+        title="顾客转移">
+        <Select v-model="modelAdmin" placeholder='请选择转移目标' style="width:200px">
           <Option v-for="item in adminList" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
+        <div slot="footer">
+          <Button @click="cancel">取消</Button>
+          <Button type="primary" @click="ok" :loading="customerTransfer_loading">确定</Button>
+        </div>
       </Modal>
     </div>
 </template>
@@ -22,7 +31,7 @@
 import editableTables from '_c/editableTables/editableTables.vue'
 import { addAdmin, getAdminsInfo, getZiXunOfShop } from '@/api/userManagement/message'
 import amendTheScheme from './amendTheScheme.vue'
-import { updateCustomer, getPageCus2 } from '@/api/makeAnAppointment/returnVisit/returnVisit'
+import { updateCustomer, getPageCusTransfer } from '@/api/makeAnAppointment/returnVisit/returnVisit'
 import {getCusVisitCount} from '@/api/user'
 import {mapMutations} from 'vuex'
 export default({
@@ -99,30 +108,7 @@ export default({
                     this.getVisit()
                   }
                 }
-              }),
-              h('Button', {
-                props: {
-                  type: 'error',
-                  size: 'small'
-                },
-                on: {
-                  click: () => {
-                    this.modal = true
-                    this.clickUserId = params.row.id
-                    getZiXunOfShop().then(res => {
-                      this.adminList = []
-                      res.info.map(item => {
-                        this.adminList.push({
-                          value: item.accountId,
-                          label: item.accountTitle
-                        })
-                      })
-                    }).catch(err => {
-                      console.log(err)
-                    })
-                  }
-                }
-              }, '顾客转移')
+              })
             ])
           }
         }
@@ -147,7 +133,12 @@ export default({
       modal: false,
       modelAdmin: '',
       adminList: [],
-      clickUserId: ''
+      clickUserId: '',
+      customerTransfer_loading: false,
+      selectDateValue: [],
+      startTime: '',
+      endTime: '',
+      disabledGroup: ''
     }
   },
   methods: {
@@ -188,7 +179,7 @@ export default({
     // 分页查询管理员
     getList () {
       this.dataList = []
-      getPageCus2(this.pageNum, this.cusName, this.cusPhone1, this.vTime).then(res => {
+      getPageCusTransfer(this.pageNum, this.cusName, this.cusPhone1, this.vTime, this.startTime, this.endTime, this.disabledGroup).then(res => {
         if (res.info === '暂无数据') {
           this.$Message.error(res.info)
           this.pageTotal = 1
@@ -244,22 +235,47 @@ export default({
         this.getList()
       }
     },
+    // 点击顾客转移按钮
+    clickCustomerTransfer () {
+      this.modal = true
+      getZiXunOfShop().then(res => {
+        this.adminList = []
+        res.info.map(item => {
+          this.adminList.push({
+            value: item.sysAccountInfoPojo.accountId,
+            label: item.sysAccountInfoPojo.accountTitle
+          })
+        })
+      }).catch(err => {
+        console.log(err)
+      })
+    },
     // 顾客转移
     ok () {
+      this.customerTransfer_loading = true
       if (!this.modelAdmin) {
         this.$Message.error('请完善信息')
+        this.customerTransfer_loading = false
+        this.modal = true
         return
       }
-      updateCustomer(this.clickUserId, this.modelAdmin).then(res => {
+      updateCustomer(this.modelAdmin, this.startTime, this.endTime, this.disabledGroup, this.cusName, this.cusPhone1).then(res => {
         this.$Message.success(res.info)
         this.modelAdmin = ''
+        this.customerTransfer_loading = false
+        this.modal = false
+        this.getList()
       }).catch(err => {
         this.$Message.error(err)
+        this.customerTransfer_loading = false
+        this.modal = true
       })
     },
     // 弹出框取消按钮
     cancel () {
-
+      this.modelAdmin = ''
+      this.customerTransfer_loading = false
+      this.modal = false
     },
     // 获得计划回访人数
     getVisit () {
@@ -313,6 +329,14 @@ export default({
           )
         }
       })
+    },
+    changeDate () {
+      this.startTime = this.selectDateValue[0] !== '' ? new Date(this.selectDateValue[0]).Format("yyyy-MM-dd") : ''
+      this.endTime = this.selectDateValue[0] !== '' ? new Date(this.selectDateValue[1]).Format("yyyy-MM-dd") : ''
+      this.getList()
+    },
+    changeRadioGroup () {
+      this.getList()
     }
   },
   components: {

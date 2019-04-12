@@ -2,9 +2,9 @@
     <div>
       <div>
         <query-condition @sendDataList="getSelectList" :showState="stateObj"></query-condition>
-        <editableTables :columns='columns' :pageTotal='pageTotal' v-model="dataList" :selectOption='selectOption' @filtrateClick='filtrateClick' @getPage='getPageNum'>
+        <editableTables :stripe="false" :rowClassName="rowClassName" :columns='columns' :pageTotal='pageTotal' v-model="dataList" :selectOption='selectOption' @filtrateClick='filtrateClick' @getPage='getPageNum'>
           <div style="margin-left: 10px;display: inline-block;">
-            <messageAdd @clickOk='addAdminDate' @accomplish='accomplish' :stateEcho='false'></messageAdd>
+            <messageAdd @clickOk='addAdminDate' @accomplish='accomplishAc' :stateEcho='false'></messageAdd>
           </div>
           <div style="display: inline-block;">
             <Button @click='getExport'>导出</Button>
@@ -29,12 +29,25 @@
       @on-cancel="cancel">
       <advancesReceived :userId="userIdPayment" :sub="submitNum" :cancel="cancelState" @submitPayment="submitPayment"></advancesReceived>
     </Modal>
+    <Modal
+      v-model="modalbeautyConsultant"
+      title="分配美颜顾问"
+      @on-ok="beautyConsultantOk"
+      @on-cancel="cancelConsultant">
+      <Select style="width: 100%" v-model="beautyConsultantValue">
+        <Option v-for="(item, index) in beautyConsultant" :key="index" :value="item.sysAccountInfoPojo.accountId">职位：{{item.sysAccountInfoPojo.accountJob}} 姓名: {{ item.sysAccountInfoPojo.accountTitle }}</Option>
+      </Select>
+      <div slot="footer">
+        <Button @click="cancelConsultant">取消</Button>
+        <Button type="primary" :loading="modal_loading" @click="beautyConsultantOk">确定</Button>
+      </div>
+    </Modal>
     </div>
 </template>
 <script>
 import editableTables from '_c/editableTables/editableTables.vue'
 import messageAdd from './components/messageAdd.vue'
-import { getPageCusSelect, appointCus, appointDelCus, cusExport, exportParam } from '@/api/makeAnAppointment/InformationEditing/InformationEditing'
+import { getPageCusSelect, appointCus, appointDelCus, cusExport, exportParam, getAdminsInfo, getCustomer, editCus } from '@/api/makeAnAppointment/InformationEditing/InformationEditing'
 import { addCusPrestore, getPageConsult, getPageCusFrom } from '@/api/cuManagement/InformationEditing/InformationEditing'
 import {getObjName} from '@/libs/util'
 import advancesReceived from './components/advancesReceived'
@@ -110,7 +123,7 @@ export default({
                 },
                 on: {
                   accomplish: () => {
-                    this.accomplish()
+                    this.accomplishAc()
                   }
                 }
               }),
@@ -144,7 +157,35 @@ export default({
                     this.userIdPayment = params.row.id + '/' + new Date()
                   }
                 }
-              }, '预收款')
+              }, '预收款'),
+              h('Button', {
+                props: {
+                  type: 'primary',
+                  size: 'small'
+                },
+                style: {
+                  display: this.$store.state.user.access.indexOf('admin') !== -1 ? 'none' : 'inline-block',
+                  marginTop: '5px'
+                },
+                on: {
+                  click: () => {
+                    this.userIds = params.row.id
+                    this.modalbeautyConsultant = true
+                    this.beautyConsultant = []
+                    this.beautyConsultantValue = ''
+                    Promise.all([getAdminsInfo(), getCustomer(this.userIds)]).then(res => {
+                      this.beautyConsultant = []
+                      this.beautyConsultantValue = ''
+                      this.beautyConsultantValue = res[1].info.accountId
+                      res[0].info.map(item => {
+                        this.beautyConsultant.push(item)
+                      })
+                    }).catch(err => {
+                      console.log(err)
+                    })
+                  }
+                }
+              }, '分配美颜顾问')
             ])
           }
         }
@@ -188,7 +229,16 @@ export default({
       submitNum: '',
       selecList: [],
       consultList: [],
-      cusFromList: []
+      cusFromList: [],
+      rowClassName: (row) => {
+        if (row.isShop !== '未到') {
+          return 'demo-table-info-row'
+        }
+      },
+      beautyConsultantValue: '',
+      beautyConsultant: [],
+      modal_loading: false,
+      modalbeautyConsultant: false
     }
   },
   methods: {
@@ -231,7 +281,7 @@ export default({
           data.cusPhone1 = item.cusPhone1
           data.cusWechat = item.cusWechat
           data.cusConstellation = item.cusConstellation
-          data.isShop = item.isShop === '0' ? '未到' : '已到'
+          data.isShop = item.isShop + '' === '0' ? '未到' : '已到'
           data.orderState = item.orderState
           data.appointTime = item.appointTime
           data.id = item.id
@@ -258,7 +308,6 @@ export default({
       this.accountJob = ''
       this.pageNum = 1
     },
-    // 需求方法------
     // 添加顾客
     addAdminDate (e) {
       addAdmin(e).then(res => {
@@ -293,7 +342,7 @@ export default({
       })
     },
     // 监听添加页面事件
-    accomplish (e) {
+    accomplishAc (e) {
       if (e) {
         this.accountTitle = ''
         this.accountJob = ''
@@ -346,7 +395,29 @@ export default({
       }).catch(err => {
         console.log(err)
       })
-    }
+    },
+    // 分配美颜顾问
+    beautyConsultantOk () {
+      this.modal_loading = true
+      editCus(this.userIds, this.beautyConsultantValue).then(res => {
+        this.userIds = ''
+        this.beautyConsultantValue = ''
+        this.$Message.success(res.info)
+        this.modal_loading = false
+        this.modalbeautyConsultant = false
+      }).catch(err => {
+        this.$Message.error(err)
+        this.modal_loading = false
+        this.modalbeautyConsultant = true
+      })
+    },
+    // 弹出框取消
+    cancelConsultant () {
+      this.adteValue = ''
+      this.timeValue = ''
+      this.beautyConsultantValue = ''
+      this.modalbeautyConsultant = false
+    },
   },
   mounted () {
     // 初始化管理员列表
@@ -357,5 +428,4 @@ export default({
 })
 </script>
 <style>
-
 </style>

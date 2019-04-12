@@ -1,6 +1,12 @@
 <template>
   <div>
-    <Button type="primary"  @click="showAddPro" style="margin-bottom: 10px;">添加产品</Button>
+   <div>
+     <Button type="primary"  @click="showAddPro" style="margin-bottom: 10px;">添加产品</Button>
+     <Button type="primary"  @click="downloadTemplate" style="margin-bottom: 10px;" :loading="loading_log">下载导入模板</Button>
+     <Upload :on-success="onUploadSuccess" :show-upload-list="false" style="display: inline-block; vertical-align: top" :action="`//${$config.baseUrl.pro.split('//')[1]}/importGoods`">
+       <Button icon="ios-cloud-upload-outline">导入</Button>
+     </Upload>
+   </div>
     <Input v-model="keyWords" style="width: 300px;">
       <Select v-model="catId" clearable slot="prepend" style="width:80px">
         <Option v-for="item in cateList" :disabled="item.id === '-1'" :value="item.id"  :key="item.id">{{ item.name }}</Option>
@@ -174,8 +180,8 @@ import {
   getUnitList
 } from '@/api/unitManage/unitManage'
 import {getProductListByPage, deleteProductById, addProduct, modifyProductById, getCateList, openOrClosePro, getProduct} from '@/api/productManagement/productManagement'
-import {getListSpec, getListSupplier} from '@/api/productManagement/productList'
-
+import {getListSpec, getListSupplier, downloadTemplateOfGoods} from '@/api/productManagement/productList'
+// import config from '@/config/index'
 export default {
   components: {
     editableTables, editor
@@ -273,6 +279,7 @@ export default {
           title: '操作',
           key: 'operate',
           align: 'left',
+          width: 190,
           render: (h, params) => {
             return h('Div', [
               h('Button', {
@@ -351,7 +358,8 @@ export default {
       // 规格单位
       speciName: '',
       // 供应商
-      listSupplier: []
+      listSupplier: [],
+      loading_log: false
     }
   },
   methods: {
@@ -558,6 +566,20 @@ export default {
         .catch(e => {
           this.$Loading.error()
         })
+    },
+    async downloadTemplate () {
+      this.loading_log = true
+      try {
+        let resData = await downloadTemplateOfGoods()
+        this.loading_log = false
+        window.location.href = resData.info
+      } catch (e) {
+        this.$Message.error(e)
+      }
+    },
+    onUploadSuccess () {
+      this.$Message.success('成功')
+      this.getData({catId: this.catId, goodsName: this.keyWords, pageNum: this.currentPage})
     }
   },
   mounted () {

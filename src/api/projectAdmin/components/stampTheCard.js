@@ -93,9 +93,14 @@ export const getCusSetMealProSteps = (csmId, pId) => {
  * @param steps obj
  */
 export const addCreatorToStep = (steps) => {
-  let params = new URLSearchParams()
   console.log(steps)
-  params.append('steps', JSON.stringify({steps: steps}))
+  let stepsData = steps[0]
+  let params = new URLSearchParams()
+  params.append('cusId', stepsData.cusId)
+  params.append('pId', stepsData.pId)
+  if (stepsData.mrsId) params.append('mrsId', stepsData.mrsId)
+  params.append('type', stepsData.type)
+  if (stepsData.csmId) params.append('csmId', stepsData.csmId)
   return axios.request({
     url: 'addCreatorToStep',
     data: params,

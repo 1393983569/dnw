@@ -49,8 +49,8 @@
                     <Option value="1" >是</Option>
                   </Select>
                 </FormItem>
-                <FormItem label="分配店铺" prop="modelShop">
-                  <div v-if="this.$store.state.user.access.indexOf('admin') !== -1">
+                <FormItem label="分配店铺" prop="modelShop"  v-if="this.$store.state.user.access.indexOf('admin') !== -1">
+                  <div>
                     <Select v-model="customInfo.modelShop" style="width:  200px">
                       <Option v-for="(item, index) in shopList" :value="item.id + ''" :key="index">{{ item.shopName }}</Option>
                     </Select>
@@ -63,7 +63,7 @@
                   <InputNumber v-model="customInfo.cusAge" placeholder="顾客年龄" style="width:   200px" />
                 </FormItem>
                 <FormItem label="生日">
-                  <DatePicker v-model="customInfo.cusBirthday" placeholder="顾客生日" style="width:   200px; margin-bottom:   0;"></DatePicker>{{' '+customInfo.constellation}}
+                  <DatePicker v-model="customInfo.cusBirthday" placeholder="顾客生日" style="width:   200px; margin-bottom:   0;"></DatePicker>{{customInfo.constellation}}
                 </FormItem>
                 <FormItem label="电话1" prop="cusPhone1">
                   <Input v-model="customInfo.cusPhone1" placeholder="家庭电话" style="width:   200px" />
@@ -193,7 +193,7 @@ export default({
         cusGender:[{required: true, message: '顾客性别不能为空', trigger: 'blur'}],
         cusFrom:[{required: true, message: '来源渠道不能为空', trigger: 'blur'}],
         consultType:[{required: true, message: '咨询类别不能为空', trigger: 'blur'}],
-        modelShop:[{required: true, message: '分配店铺不能为空', trigger: 'blur'}],
+        // modelShop:[{required: true, message: '分配店铺不能为空', trigger: 'blur'}],
         cusPhone1: [{required: true, message: '电话号码不能为空', trigger: 'blur'}]
       }
     }
@@ -215,7 +215,9 @@ export default({
   methods: {
     modalOk (e) {
       this.$refs[e].validate(valid => {
+        console.log(valid, '==========================')
         if(valid) {
+          try {
           let data = {}
           data.cusName = this.customInfo.cusName
           data.cusAge = this.customInfo.cusAge
@@ -227,10 +229,10 @@ export default({
           data.cusQq = this.customInfo.cusQq
           data.cusFrom = this.customInfo.cusFrom
           data.client = this.customInfo.client
-          //        data.orderNum = this.orderNum
+          // data.orderNum = this.orderNum
           data.consultType = this.customInfo.consultType
           data.dealState = this.dealState
-          data.city = this.customInfo.city[2]
+          if (this.customInfo.city) data.city = this.customInfo.city[2]
           data.shopId = this.shopId
           data.remark = this.remark
           data.vip = this.vip
@@ -247,10 +249,14 @@ export default({
           }
           this.restoration()
           this.modalValue = false
+          console.log(data)
           if (this.echoDataState) {
             this.upUser(data)
           } else {
             this.addUser(data)
+          }
+          } catch (e) {
+            console.log(e)
           }
         }else{
           this.$Message.error('Fail')
@@ -270,7 +276,6 @@ export default({
     modalCancel (e) {
       this.$refs[e].resetFields()
       this.restoration()
-
     },
     // 复位
     restoration (data) {
@@ -326,6 +331,8 @@ export default({
     },
     // 回显
     echoDataValue (data, msg) {
+      this.customInfo = {}
+      try {
       this.customInfo.cusName = data.cusName
       this.customInfo.cusAge = data.cusAge
       this.customInfo.cusBirthday = data.cusBirthday
@@ -340,7 +347,6 @@ export default({
       this.customInfo.consultType = data.consultType
       this.customInfo.shopTime = data.shopTime
       this.dealState = data.dealState
-      this.customInfo.city = [msg.provinceId, msg.cityId, msg.id]
       this.shopId = data.shopId
       this.remark = data.remark
       this.vip = data.vip + ''
@@ -353,6 +359,11 @@ export default({
       this.customInfo.visitTime = data.visitTime
       this.customInfo.valueData = data.appointTime.split(' ')[0]
       this.customInfo.valueTime = data.appointTime.split(' ')[1]
+      this.customInfo.constellation = data.cusConstellation
+      if (msg) this.customInfo.city = [msg.provinceId, msg.cityId, msg.id]
+      } catch (e) {
+        console.log(e)
+      }
     },
     // 修改信息
     echoData () {

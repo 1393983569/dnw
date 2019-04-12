@@ -8,14 +8,14 @@
       </Input>
     </FormItem>
     <FormItem prop="password">
-      <Input type="password" v-model="form.password" placeholder="请输入密码">
+      <Input type="password" v-model="form.password" @keyup.enter.native="handleSubmit" placeholder="请输入密码">
         <span slot="prepend">
           <Icon :size="14" type="locked"></Icon>
         </span>
       </Input>
     </FormItem>
     <FormItem>
-      <Button @click="handleSubmit" type="primary" long>登录</Button>
+      <Button @click="handleSubmit" :loading="loading" type="primary" long>登录</Button>
     </FormItem>
   </Form>
 </template>
@@ -43,9 +43,10 @@ export default {
   data () {
     return {
       form: {
-        userName: 'admin',
+        userName: '',
         password: ''
-      }
+      },
+      loading: false
     }
   },
   computed: {
@@ -58,14 +59,20 @@ export default {
   },
   methods: {
     handleSubmit () {
+      this.loading = true
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
           this.$emit('on-success-valid', {
             userName: this.form.userName,
             password: this.form.password
           })
+        } else {
+          this.loading = false
         }
       })
+    },
+    cancelLogin () {
+      this.loading = false
     }
   }
 }

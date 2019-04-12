@@ -176,3 +176,13 @@ export const modifyProCate = (id, name) => {
     method: 'post'
   })
 }
+
+/**
+ * 下载导入项目的模板
+ */
+export const downloadTemplateOfProject = () => {
+  return axios.request({
+    url: 'downloadTemplateOfProject',
+    method: 'post'
+  })
+}

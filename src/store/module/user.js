@@ -18,6 +18,7 @@ export default {
     token: getToken(),
     access: [],
     shopName: '',
+    shopId: ''
   },
   mutations: {
     setAvator (state, avatorPath) {
@@ -38,6 +39,9 @@ export default {
     },
     setShopName (state, shopName) {
       state.shopName = shopName
+    },
+    setShopId (state, shopId) {
+      state.shopId = shopId
     }
   },
   actions: {
@@ -85,6 +89,7 @@ export default {
           // id
           // commit('setUserId', data.accountId)
           commit('setAccess', arr)
+          commit('setShopId', data.shopId + '')
           commit('setShopName', data.shopName)
           resolve(data)
         }).catch(err => {
