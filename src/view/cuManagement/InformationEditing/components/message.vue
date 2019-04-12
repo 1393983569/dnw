@@ -10,7 +10,7 @@
           @on-cancel="cancel"
           width="800">
           <div slot="footer">
-            <Button type="text" size="large" @click="modalCancel">重置</Button>
+            <Button type="text" size="large" @click="modalCancel">重 置</Button>
             <Button type="primary" size="large" @click="modalOk">确定</Button>
           </div>
             <Row class="m_left">
